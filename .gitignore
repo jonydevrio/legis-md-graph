@@ -3,9 +3,8 @@ __pycache__/
 .venv/
 .env
 
-# CSVs completos são gerados por scripts/extract.py a partir do acervo legis-md
+# CSVs completos são gerados por scripts/extract.py a partir do acervo legis-md.
+# No repositório ficam apenas as amostras de import/amostra_*.csv
+data/*.csv
 import/normas.csv
 import/correlacoes.csv
-
-# Exportações grandes: gere com os comandos do README
-export/*.dump
