@@ -117,8 +117,8 @@ urn: "urn:lex:br:federal:lei:2002-01-10;10406"
 ---
 ```
 
-**Este projeto carrega a esfera federal vigente**: 16.446 normas e 5.349 correlações
-extraídas do texto.
+**Este projeto carrega a esfera federal:** 16.446 normas e 5.349 correlações extraídas do
+texto, resultando em 16.321 nós com chave única e 3.974 relações.
 
 ### Como rodar
 
@@ -141,24 +141,25 @@ Ou, pelo Neo4j Browser, com os CSVs em `<NEO4J_HOME>/import/`, seguindo
 
 ### Quer o grafo pronto, sem rodar nada?
 
-A pasta [`export/`](export/) traz o grafo já carregado em dois formatos:
+O grafo já carregado está em dois formatos, descritos em
+**[docs/IMPORTAR.md](docs/IMPORTAR.md)**:
 
-| Arquivo | Tamanho | Como usar |
-| --- | ---: | --- |
-| `legis-graph.cypher` | 10,5 MB | funciona em **qualquer** versão do Neo4j |
-| `legis-graph-neo4j5.dump` | 12,8 MB | restauração nativa, exige Neo4j 5.x |
+| Arquivo | Como usar |
+| --- | --- |
+| `export/legis-graph.cypher` | funciona em **qualquer** versão do Neo4j |
+| `export/legis-graph-neo4j5.dump` | restauração nativa, exige Neo4j 5.x |
 
-Instruções passo a passo, com Docker, Aura Free e solução dos erros mais comuns:
-**[docs/IMPORTAR.md](docs/IMPORTAR.md)**.
+Se os arquivos não estiverem no repositório (são grandes), gere-os você mesmo com os
+comandos de [`docs/IMPORTAR.md`](docs/IMPORTAR.md#gerar-os-arquivos-de-exportação).
 
 ---
 
 ## 4. Perguntas de negócio e o que o grafo respondeu
 
 Todas as queries estão comentadas em [`cypher/queries_negocio.cypher`](cypher/queries_negocio.cypher).
-Os números abaixo são a execução real sobre as 16.446 normas federais vigentes.
+Os números abaixo são a execução real sobre as 16.446 normas federais.
 
-### Q1. Como se compõe o acervo federal vigente?
+### Q1. Como se compõe o acervo federal?
 
 | Tipo | Normas |
 | --- | ---: |
@@ -334,7 +335,7 @@ PADROES_PROXIMOS = [
 ### 5.7 Relações órfãs
 
 1.373 das 5.349 correlações não encontraram destino no grafo, porque a norma citada é
-anterior ao escopo federal coletado ou pertence a outra esfera. Elas são **descartadas com
+anterior ao escopo coletado ou pertence a outra esfera. Elas são **descartadas com
 contagem explícita** no log, não silenciosamente — e a query de carga usa `MATCH`, nunca
 `MERGE` cego, para não criar nós fantasmas com apenas um número.
 
@@ -347,13 +348,16 @@ cypher/
   modelo_grafo.cypher      schema comentado + exemplo mínimo (abre no Arrows.app)
   load_csv.cypher          carga via LOAD CSV, em ordem, com alternativa sem APOC
   queries_negocio.cypher   10 queries comentadas, uma por pergunta de negócio
-data/                      CSVs gerados (normas e correlações)
-docs/                      imagens de evidência e guia de importação
+data/                      CSVs gerados por extract.py (não versionados)
+docs/
+  modelo_grafo.png         diagrama do schema
+  normas_por_decada.png    volume legislativo por década
+  top_revogadoras.png      normas que mais revogaram
   IMPORTAR.md              como abrir o grafo no seu Neo4j (3 caminhos)
-export/
-  legis-graph.cypher       grafo completo em Cypher (qualquer versão)
-  legis-graph-neo4j5.dump  dump nativo Neo4j 5.x
-import/                    CSVs para <NEO4J_HOME>/import + amostras versionadas
+export/                    grafo pronto (gerado pelos comandos de docs/IMPORTAR.md)
+import/
+  amostra_normas.csv       amostra versionada de 10 normas
+  amostra_correlacoes.csv  amostra versionada de 40 correlações
 scripts/
   extract.py               extrai nós e arestas do acervo Markdown
   load.py                  carrega no Neo4j via driver Python
