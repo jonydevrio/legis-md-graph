@@ -68,41 +68,67 @@ def carregar_normas(sessao, caminho, lote=2000):
 
 
 def carregar_correlacoes(sessao, caminho, lote=2000):
-    """Cria as relações só quando a norma de destino existe no grafo."""
-    consulta = """
+    """Cria as relações na direção correta do efeito jurídico.
+
+    O CSV traz `contem_id` (norma cujo texto traz a anotação) e
+    `citada_numero`/`citada_ano` (norma nomeada na anotação).
+
+      REVOGA / ALTERA / INCLUI  ->  (citada)-[efeito]->(contem)
+          A lei citada é quem produziu o efeito; a que contém a anotação
+          é quem o recebeu.
+
+      REFERENCIA                ->  (contem)-[cita]->(citada)
+          "Vide Lei X" significa que a norma que traz a anotação é quem
+          remete à outra.
+
+    Auto-referência (contem == citada) é descartada: em 4 casos o conversor
+    do acervo anotou a norma citando a si mesma, o que não é relação.
+    """
+    consulta_efeito = """
     UNWIND $linhas AS l
-    MATCH (o:Norma {id: l.origem_id})
-    MATCH (d:Norma)
-      WHERE d.numero = l.destino_numero
-        AND d.esfera = o.esfera
-        AND (d.uf = o.uf OR (d.uf IS NULL AND o.uf IS NULL))
-        AND (l.destino_ano = '' OR toString(d.ano) = l.destino_ano)
-    WITH o, d, l
-    WHERE o <> d
-    CALL apoc.merge.relationship(o, l.tipo_relacao, {}, {}, d) YIELD rel
+    MATCH (c:Norma {id: l.contem_id})
+    MATCH (x:Norma)
+      WHERE x.numero = l.citada_numero
+        AND x.esfera = c.esfera
+        AND (x.uf = c.uf OR (x.uf IS NULL AND c.uf IS NULL))
+        AND (l.citada_ano = '' OR toString(x.ano) = l.citada_ano)
+    WITH x, c, l
+    WHERE x <> c
+    CALL apoc.merge.relationship(x, l.tipo_relacao, {}, {}, c) YIELD rel
+    SET rel.trecho = l.trecho
+    RETURN count(rel) AS total
+    """
+    consulta_cita = """
+    UNWIND $linhas AS l
+    MATCH (c:Norma {id: l.contem_id})
+    MATCH (x:Norma)
+      WHERE x.numero = l.citada_numero
+        AND x.esfera = c.esfera
+        AND (x.uf = c.uf OR (x.uf IS NULL AND c.uf IS NULL))
+        AND (l.citada_ano = '' OR toString(x.ano) = l.citada_ano)
+    WITH c, x, l
+    WHERE c <> x
+    CALL apoc.merge.relationship(c, 'REFERENCIA', {}, {}, x) YIELD rel
     SET rel.trecho = l.trecho
     RETURN count(rel) AS total
     """
     total = 0
     pendentes = 0
-    lote_atual = []
     linhas = list(csv.DictReader(open(caminho, encoding='utf-8')))
-    print(f'  {len(linhas)} correlações a processar')
-    for linha in linhas:
-        lote_atual.append(linha)
-        if len(lote_atual) >= lote:
-            r = sessao.run(consulta, linhas=lote_atual).single()
+    efeito = [l for l in linhas if l['tipo_relacao'] != 'REFERENCIA']
+    cita = [l for l in linhas if l['tipo_relacao'] == 'REFERENCIA']
+    print(f'  {len(efeito)} com efeito + {len(cita)} de referência')
+
+    for nome, consulta, dados in (('efeito', consulta_efeito, efeito),
+                                  ('referência', consulta_cita, cita)):
+        for i in range(0, len(dados), lote):
+            pedaco = dados[i:i + lote]
+            r = sessao.run(consulta, linhas=pedaco).single()
             n = r['total'] if r else 0
             total += n
-            pendentes += len(lote_atual) - n
-            lote_atual = []
-            print(f'  {total} relações criadas', end='\r')
-    if lote_atual:
-        r = sessao.run(consulta, linhas=lote_atual).single()
-        n = r['total'] if r else 0
-        total += n
-        pendentes += len(lote_atual) - n
-    print(f'  {total} relações criadas ({pendentes} sem destino no grafo)')
+            pendentes += len(pedaco) - n
+            print(f'  {total} relações criadas ({nome})', end='\r')
+    print(f'  {total} relações criadas ({pendentes} sem par no grafo)')
     return total
 
 

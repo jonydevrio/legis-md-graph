@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Roda as queries de negócio e imprime tabelas em texto (para virar print/README)."""
+"""Roda as queries de negócio e imprime tabelas em texto (para virar print/README)."""
 import os
 import re
 import sys

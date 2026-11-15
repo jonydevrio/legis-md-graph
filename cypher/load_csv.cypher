@@ -44,38 +44,69 @@ SET n.titulo         = linha.titulo,
 
 // ----------------------------------------------------------------------------
 // 3. RELAÇÕES
+//
 // A correlação é criada por *número + esfera + ano*, não por texto do título.
 // Isso resolve o problema de a mesma norma aparecer como "Lei nº 10.406",
 // "Lei 10.406/2002" ou "Lei no 10.406" no corpo dos textos.
-// O type() da relação vem do marcador que o Planalto usa na anotação:
-//   Revogado pela...        -> REVOGA
-//   Redação dada pela...    -> ALTERA
-//   Incluído pela...        -> INCLUI
-//   Vide...                 -> REFERENCIA
+//
+// DIREÇÃO DO EFEITO — o ponto que mais erra neste tipo de extração:
+//   `contem_id` é a norma cujo TEXTO traz a anotação.
+//   `citada_*`  é a norma NOMEADA na anotação.
+//
+//   REVOGA / ALTERA / INCLUI  ->  (citada)-[efeito]->(contem)
+//     "*(Revogado pela Lei nº 9.120/1995)*" está dentro da Lei 3.820/1960:
+//     foi a 9.120 que revogou a 3.820. A seta sai da citada.
+//
+//   REFERENCIA                ->  (contem)-[cita]->(citada)
+//     "*(Vide Lei nº 8.130/1990)*" dentro da Lei 3.792/1960: quem remete
+//     é a 3.792. A seta sai de quem traz o "Vide".
+//
+// Auto-referência (contem == citada) é descartada.
 // ----------------------------------------------------------------------------
+
+// 3.a Efeito: citada -> contem
 LOAD CSV WITH HEADERS FROM 'file:///correlacoes.csv' AS linha
-MATCH (origem:Norma {id: linha.origem_id})
-MATCH (destino:Norma)
-  WHERE destino.numero = linha.destino_numero
-    AND destino.esfera = origem.esfera
-    AND (destino.uf = origem.uf OR (destino.uf IS NULL AND origem.uf IS NULL))
-    AND (linha.destino_ano = '' OR toString(destino.ano) = linha.destino_ano)
-    AND destino <> origem
-CALL apoc.merge.relationship(origem, linha.tipo_relacao, {}, {}, destino)
+WITH linha WHERE linha.tipo_relacao <> 'REFERENCIA'
+MATCH (contem:Norma {id: linha.contem_id})
+MATCH (citada:Norma)
+  WHERE citada.numero = linha.citada_numero
+    AND citada.esfera = contem.esfera
+    AND (citada.uf = contem.uf OR (citada.uf IS NULL AND contem.uf IS NULL))
+    AND (linha.citada_ano = '' OR toString(citada.ano) = linha.citada_ano)
+WITH citada, contem, linha
+WHERE citada <> contem
+CALL apoc.merge.relationship(citada, linha.tipo_relacao, {}, {}, contem)
   YIELD rel
 SET rel.trecho = linha.trecho
-RETURN count(rel) AS relacoes_criadas;
+RETURN count(rel) AS relacoes_de_efeito;
 
-// Versão sem APOC (Neo4j puro). Escolha UM dos caminhos: use o bloco acima ou
-// os quatro abaixo. Sem APOC, o tipo da relação tem de ser fixo por query.
+// 3.b Referência: contem -> citada
+LOAD CSV WITH HEADERS FROM 'file:///correlacoes.csv' AS linha
+WITH linha WHERE linha.tipo_relacao = 'REFERENCIA'
+MATCH (contem:Norma {id: linha.contem_id})
+MATCH (citada:Norma)
+  WHERE citada.numero = linha.citada_numero
+    AND citada.esfera = contem.esfera
+    AND (citada.uf = contem.uf OR (citada.uf IS NULL AND contem.uf IS NULL))
+    AND (linha.citada_ano = '' OR toString(citada.ano) = linha.citada_ano)
+WITH contem, citada, linha
+WHERE contem <> citada
+CALL apoc.merge.relationship(contem, 'REFERENCIA', {}, {}, citada)
+  YIELD rel
+SET rel.trecho = linha.trecho
+RETURN count(rel) AS relacoes_de_referencia;
+
+// Versão sem APOC (Neo4j puro). Escolha UM dos caminhos: use os blocos acima
+// ou os blocos abaixo. Sem APOC, o tipo da relação tem de ser fixo por query.
 //
 // LOAD CSV WITH HEADERS FROM 'file:///correlacoes.csv' AS linha
-// MATCH (o:Norma {id: linha.origem_id}), (d:Norma)
-//   WHERE linha.tipo_relacao = 'REVOGA'
-//     AND d.numero = linha.destino_numero AND d.esfera = o.esfera
-//     AND (linha.destino_ano = '' OR toString(d.ano) = linha.destino_ano)
-//     AND d <> o
-// MERGE (o)-[r:REVOGA]->(d)
+// WITH linha WHERE linha.tipo_relacao = 'REVOGA'
+// MATCH (contem:Norma {id: linha.contem_id}), (citada:Norma)
+//   WHERE citada.numero = linha.citada_numero
+//     AND citada.esfera = contem.esfera
+//     AND (linha.citada_ano = '' OR toString(citada.ano) = linha.citada_ano)
+//     AND citada <> contem
+// MERGE (citada)-[r:REVOGA]->(contem)
 // SET r.trecho = linha.trecho;
 
 // ----------------------------------------------------------------------------

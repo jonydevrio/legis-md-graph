@@ -20,16 +20,26 @@
 //     versao_texto  "original" | "compilada (texto vigente)" | ...
 //     urn / fonte / arquivo
 //
-//  Relações (todas com propriedade `trecho`, o texto que a originou):
+//  Relações (todas com propriedade `trecho`, o texto que a originou).
+//  A DIREÇÃO é a parte que mais erra neste tipo de extração:
 //
-//    (:Norma)-[:REVOGA]->(:Norma)       a origem revogou a destino
-//    (:Norma)-[:ALTERA]->(:Norma)       redação dada / alterado por
-//    (:Norma)-[:INCLUI]->(:Norma)       dispositivo incluído
-//    (:Norma)-[:REFERENCIA]->(:Norma)   "Vide" — remissão sem alterar
+//    REVOGA / ALTERA / INCLUI
+//        (citada na anotação)-[efeito]->(norma que CONTÉM a anotação)
+//        A anotação "*(Revogado pela Lei nº 9.120/1995)*" aparece DENTRO da
+//        Lei 3.820/1960. Quem revogou foi a 9.120; a 3.820 recebeu o efeito:
+//            (Lei 9.120)-[:REVOGA]->(Lei 3.820)   ✓
+//            (Lei 3.820)-[:REVOGA]->(Lei 9.120)   ✗
 //
-//  Direção: sempre da norma que produz o efeito para a que o recebe.
+//    REFERENCIA  ("Vide")
+//        (norma que CONTÉM o "Vide")-[cita]->(citada)
+//        Aqui é o inverso: quem remete é quem traz a anotação.
+//
 //  Assim, `MATCH (a)-[:REVOGA]->(b)` lê-se "a revogou b", e o grau de
-//  entrada de um nó mede quantas normas o afetaram.
+//  entrada de um nó mede quantas normas produziram algum efeito sobre ele.
+//
+//  Controle rápido (o Código Civil foi alterado, não alterou):
+//    MATCH (cc:Norma {numero:'10406'})<-[r:ALTERA]-() RETURN count(r); // 29
+//    MATCH (cc:Norma {numero:'10406'})-[r:ALTERA]->() RETURN count(r); //  0
 // ============================================================================
 
 CREATE (n:Norma {

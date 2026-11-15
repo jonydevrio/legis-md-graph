@@ -7,14 +7,15 @@ Gera dois CSVs prontos para LOAD CSV no Neo4j:
   correlacoes.csv   -- uma linha por relação entre normas
 
 Uso:
-  python3 extract.py <diretorio-do-acervo> <diretorio-de-saida> [--completo] [--limite=N]
+  python3 extract.py <diretorio-do-acervo> <diretorio-de-saida> [--completo]
 
-Sem --completo, processa apenas normas sem revogação declarada.
+Sem --completo, processa apenas normas vigentes (situacao != revogada).
 """
 import csv
 import os
 import re
 import sys
+from datetime import date
 
 # ---------------------------------------------------------------------------
 # Frontmatter YAML mínimo (sem dependência externa)
@@ -24,8 +25,9 @@ CAMPO_RE = re.compile(r'^([a-z_][a-z0-9_]*):\s*(.*)$')
 
 
 def ler_frontmatter(caminho):
-    """Lê o bloco --- ... --- do topo do arquivo e devolve dict + corpo."""
+    """Lê o bloco --- ... --- do topo do arquivo e devolve dict + tamanho do corpo."""
     meta = {}
+    corpo_linhas = []
     with open(caminho, encoding='utf-8', errors='replace') as f:
         linhas = f.readlines()
 
@@ -55,6 +57,7 @@ def ler_frontmatter(caminho):
 # Normalização de tipo e identificação da norma
 # ---------------------------------------------------------------------------
 
+# tipo canônico do acervo -> (label do nó, sigla curta)
 TIPO_PARA_LABEL = {
     'Lei Ordinária': ('Lei', 'L'),
     'Lei Complementar': ('LeiComplementar', 'LC'),
@@ -69,25 +72,26 @@ TIPO_PARA_LABEL = {
 }
 
 
-def _sem_acento(texto):
-    tabela = str.maketrans(
-        'áàâãäéèêëíìîïóòôõöúùûüçÁÀÂÃÄÉÈÊËÍÌÎÏÓÒÔÕÖÚÙÛÜÇ',
-        'aaaaaeeeeiiiiooooouuuucAAAAAEEEEIIIIOOOOOUUUUC',
-    )
-    return texto.translate(tabela)
-
-
 def label_de_tipo(tipo):
     if not tipo:
         return ('Norma', 'N')
     t = tipo.strip()
     if t in TIPO_PARA_LABEL:
         return TIPO_PARA_LABEL[t]
+    # tenta casar sem acento/caixa
     alvo = _sem_acento(t).lower()
     for chave, valor in TIPO_PARA_LABEL.items():
         if _sem_acento(chave).lower() == alvo:
             return valor
     return ('Norma', 'N')
+
+
+def _sem_acento(texto):
+    tabela = str.maketrans(
+        'áàâãäéèêëíìîïóòôõöúùûüçÁÀÂÃÄÉÈÊËÍÌÎÏÓÒÔÕÖÚÙÛÜÇ',
+        'aaaaaeeeeiiiiooooouuuucAAAAAEEEEIIIIOOOOOUUUUC',
+    )
+    return texto.translate(tabela)
 
 
 def normalizar_numero(numero):
@@ -106,17 +110,19 @@ def chave_norma(esfera, uf, tipo_sigla, numero, ano):
 # ---------------------------------------------------------------------------
 # Extração de correlações no corpo do texto
 # ---------------------------------------------------------------------------
-#
+
 # Padrões observados no acervo (Planalto / normas.leg.br):
 #   *(Revogado pela Lei nº 13.146, de 6/7/2015, ...)*
 #   *(Redação dada pela Lei nº 13.874, de 2019)*
 #   *(Incluído pela Lei nº 13.777, de 2019)*
 #   *(Vide Lei nº 15.040, de 9/12/2024)*
+#   *(Vigência ...)*
 #
 # PRECISÃO: o marcador precisa estar *imediatamente antes* da citação, como em
 # "Revogado pela Lei nº 13.146". Se olhássemos a linha inteira, uma linha como
 # "b) associação ... nos termos dos arts. 53 a 61 da Lei nº 10.406" seria lida
 # como "esta lei altera o Código Civil", o que é falso: ela apenas o invoca.
+# Por isso o padrão abaixo amarra marcador + citação.
 TIPO_NO_TEXTO = (
     r'(Lei Complementar|Lei Delegada|Lei Ordinária|Lei|Decreto-Lei|Decreto|'
     r'Medida Provisória|Emenda Constitucional|Resolução|Portaria|Instrução Normativa)'
@@ -133,6 +139,7 @@ MARCADORES = {
     'REFERENCIA': r'\bVide\b',
 }
 
+# marcador seguido, de perto, por uma citação
 PADROES_PROXIMOS = [
     (nome, re.compile(padrao + r'\s*' + TIPO_NO_TEXTO + CITACAO, re.I))
     for nome, padrao in MARCADORES.items()
@@ -157,13 +164,26 @@ def extrair_correlacoes(corpo):
                 if not numero_norm or len(numero_norm) > 8:
                     continue
                 if not ano:
+                    # o ano costuma vir depois, separado por vírgula
                     cauda = linha[m.end():m.end() + 90]
                     m2 = re.search(r'\b(1[89]\d\d|20\d\d)\b', cauda)
                     if not m2:
                         m2 = re.search(r'\b(1[89]\d\d|20\d\d)\b', linha)
                     ano = m2.group(1) if m2 else None
-                achados.append((relacao, tipo_txt, numero_norm, ano,
-                                linha.strip()[:160]))
+                # O trecho precisa CONTER o marcador que justifica a aresta.
+                # Cortar a linha do início deixava de fora justamente o
+                # "*(Redação dada pela Lei nº ...)*" quando ele vem no fim
+                # de um dispositivo longo. Guardamos uma janela em torno do
+                # marcador: contexto anterior (o dispositivo) + a citação.
+                ini = max(0, m.start() - 90)
+                fim = min(len(linha), m.end() + 80)
+                trecho = linha[ini:fim].strip()
+                if ini > 0:
+                    trecho = '…' + trecho
+                if fim < len(linha):
+                    trecho = trecho + '…'
+                achados.append((relacao, tipo_txt, numero_norm, ano, trecho))
+    # dedup preservando ordem
     vistos = set()
     saida = []
     for a in achados:
@@ -195,6 +215,7 @@ PASTAS_TIPO = {
 
 
 def tipo_por_caminho(rel):
+    """Descobre o tipo pela pasta, quando o frontmatter não traz."""
     partes = rel.split(os.sep)
     for parte in reversed(partes):
         if parte in PASTAS_TIPO:
@@ -220,11 +241,11 @@ def esfera_por_caminho(rel):
 
 
 def esta_vigente(meta, corpo):
-    """Decide se a norma entra, e registra como se chegou à conclusão.
+    """Decide se a norma entra como vigente.
 
     Regra do acervo: `revogada` é o campo dedicado, mas aparece como null na
     maioria. Tratamos como NÃO vigente apenas quando afirma true, ou quando
-    `situacao` declara revogação. Os demais ficam vigentes=True, com a
+    `situacao` declara revogação. Os demais casos ficam vigentes=True, com a
     confiança registrada em `vigencia_origem`.
     """
     revogada = (meta.get('revogada') or '').strip().lower()
@@ -273,8 +294,13 @@ def main():
             'esfera', 'uf', 'ementa', 'situacao', 'vigente', 'vigencia_origem',
             'versao_texto', 'urn', 'fonte', 'arquivo', 'revogada_por_txt',
         ])
-        wc.writerow(['origem_id', 'tipo_relacao', 'destino_tipo',
-                     'destino_numero', 'destino_ano', 'trecho'])
+        # Semântica explícita: `contem_id` é a norma cujo texto traz a
+        # anotação; `citada_*` é a norma nomeada na anotação. A DIREÇÃO da
+        # aresta depende do tipo (ver scripts/load.py e load_csv.cypher):
+        #   REVOGA/ALTERA/INCLUI -> citada -[efeito]-> contem
+        #   REFERENCIA           -> contem -[cita]->    citada
+        wc.writerow(['contem_id', 'citada_tipo', 'citada_numero',
+                     'citada_ano', 'tipo_relacao', 'trecho'])
 
         for dirpath, _dirnames, filenames in os.walk(raiz):
             if '.git' in dirpath:
@@ -319,8 +345,15 @@ def main():
                 por_esfera[esfera] = por_esfera.get(esfera, 0) + 1
 
                 for relacao, tipo_txt, num_dest, ano_dest, trecho in extrair_correlacoes(corpo):
-                    wc.writerow([norma_id, relacao, tipo_txt, num_dest,
-                                 ano_dest or '', trecho])
+                    # DIREÇÃO DO EFEITO — resolvida no loader, a partir destes
+                    # campos neutros:
+                    #   "*(Revogado pela Lei nº 9.120/1995)*" dentro da Lei
+                    #   3.820/1960  ->  (9120)-[:REVOGA]->(3820)
+                    # e não o contrário. Já "*(Vide Lei nº 8.130/1990)*"
+                    # dentro da Lei 3.792/1960  ->  (3792)-[:REFERENCIA]->(8130),
+                    # porque quem referencia é a norma que traz o "Vide".
+                    wc.writerow([norma_id, tipo_txt, num_dest,
+                                 ano_dest or '', relacao, trecho])
                     correlacoes += 1
 
                 if limite and total >= limite:
@@ -328,7 +361,7 @@ def main():
             if limite and total >= limite:
                 break
 
-    print(f'normas gravadas: {total} (sem revogação declarada: {vigentes})')
+    print(f'normas gravadas: {total} (vigentes: {vigentes})')
     print(f'sem número no frontmatter: {sem_numero}')
     print(f'correlações: {correlacoes}')
     print('por esfera:', por_esfera)

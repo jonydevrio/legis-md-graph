@@ -1,30 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="470" viewBox="0 0 1100 470" font-family="DejaVu Sans, Arial, sans-serif">
-<rect width="1100" height="470" fill="#ffffff"/>
-<text x="30" y="44" font-size="21" font-weight="bold" fill="#18181b">Normas que mais revogaram outras</text>
-<text x="30" y="68" font-size="13" fill="#6e6e76">Relação :REVOGA — quem mais retirou normas do ordenamento</text>
-<text x="30" y="122" font-size="12" fill="#18181b">Lei nº 8.212 de 24/07/1991 (custeio da seguridade)</text>
-<rect x="430" y="110" width="620" height="22" rx="3" fill="#107a57"/>
-<text x="1060" y="126" font-size="12" font-weight="bold" fill="#18181b">17</text>
-<text x="30" y="156" font-size="12" fill="#18181b">Lei nº 8.213 de 24/07/1991 (benefícios previdenciários)</text>
-<rect x="430" y="144" width="620" height="22" rx="3" fill="#107a57"/>
-<text x="1060" y="160" font-size="12" font-weight="bold" fill="#18181b">17</text>
-<text x="30" y="190" font-size="12" fill="#18181b">Lei nº 9.503 de 23/09/1997 (Código de Trânsito)</text>
-<rect x="430" y="178" width="400" height="22" rx="3" fill="#107a57"/>
-<text x="840" y="194" font-size="12" font-weight="bold" fill="#18181b">11</text>
-<text x="30" y="224" font-size="12" fill="#18181b">Lei nº 10.406 de 10/01/2002 (Código Civil)</text>
-<rect x="430" y="212" width="364" height="22" rx="3" fill="#107a57"/>
-<text x="804" y="228" font-size="12" font-weight="bold" fill="#18181b">10</text>
-<text x="30" y="258" font-size="12" fill="#18181b">Lei nº 7.713 de 22/12/1988 (IRPF)</text>
-<rect x="430" y="246" width="328" height="22" rx="3" fill="#107a57"/>
-<text x="768" y="262" font-size="12" font-weight="bold" fill="#18181b">9</text>
-<text x="30" y="292" font-size="12" fill="#18181b">Lei nº 8.981 de 20/01/1995 (IR / tributação)</text>
-<rect x="430" y="280" width="328" height="22" rx="3" fill="#107a57"/>
-<text x="768" y="296" font-size="12" font-weight="bold" fill="#18181b">9</text>
-<text x="30" y="326" font-size="12" fill="#18181b">Lei nº 4.737 de 15/07/1965 (Código Eleitoral)</text>
-<rect x="430" y="314" width="328" height="22" rx="3" fill="#107a57"/>
-<text x="768" y="330" font-size="12" font-weight="bold" fill="#18181b">9</text>
-<text x="30" y="360" font-size="12" fill="#18181b">Lei nº 6.404 de 15/12/1976 (Sociedades por Ações)</text>
-<rect x="430" y="348" width="328" height="22" rx="3" fill="#107a57"/>
-<text x="768" y="364" font-size="12" font-weight="bold" fill="#18181b">9</text>
-<text x="30" y="410" font-size="11.5" fill="#6e6e76">Fonte: grafo legis-md-graph, 3.974 relações, 1.028 arestas :REVOGA.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="480" viewBox="0 0 1180 480" font-family="DejaVu Sans, Arial, sans-serif">
+<rect width="1180" height="480" fill="#ffffff"/>
+<text x="30" y="44" font-size="21" fill="#18181b" font-weight="bold" text-anchor="start">Normas que mais revogaram outras</text>
+<text x="30" y="68" font-size="13" fill="#6e6e76" text-anchor="start">Relação :REVOGA — a seta sai de quem revogou</text>
+<text x="30" y="124" font-size="12" fill="#18181b" text-anchor="start">Lei nº 13.328 de 29/07/2016</text>
+<text x="400" y="124" font-size="11" fill="#6e6e76" text-anchor="start">2016</text>
+<rect x="450" y="110" width="560" height="23" rx="3" fill="#107a57"/>
+<text x="1020" y="126" font-size="12" fill="#18181b" font-weight="bold" text-anchor="start">16</text>
+<text x="30" y="158" font-size="12" fill="#18181b" text-anchor="start">Lei nº 15.141 de 02/06/2025</text>
+<text x="400" y="158" font-size="11" fill="#6e6e76" text-anchor="start">2025</text>
+<rect x="450" y="144" width="455" height="23" rx="3" fill="#107a57"/>
+<text x="915" y="160" font-size="12" fill="#18181b" font-weight="bold" text-anchor="start">13</text>
+<text x="30" y="192" font-size="12" fill="#18181b" text-anchor="start">Lei nº 14.875 de 31/05/2024</text>
+<text x="400" y="192" font-size="11" fill="#6e6e76" text-anchor="start">2024</text>
+<rect x="450" y="178" width="455" height="23" rx="3" fill="#107a57"/>
+<text x="915" y="194" font-size="12" fill="#18181b" font-weight="bold" text-anchor="start">13</text>
+<text x="30" y="226" font-size="12" fill="#18181b" text-anchor="start">Lei nº 13.506 de 13/11/2017</text>
+<text x="400" y="226" font-size="11" fill="#6e6e76" text-anchor="start">2017</text>
+<rect x="450" y="212" width="455" height="23" rx="3" fill="#107a57"/>
+<text x="915" y="228" font-size="12" fill="#18181b" font-weight="bold" text-anchor="start">13</text>
+<text x="30" y="260" font-size="12" fill="#18181b" text-anchor="start">Lei nº 9.430 de 27/12/1996</text>
+<text x="400" y="260" font-size="11" fill="#6e6e76" text-anchor="start">1996</text>
+<rect x="450" y="246" width="420" height="23" rx="3" fill="#107a57"/>
+<text x="880" y="262" font-size="12" fill="#18181b" font-weight="bold" text-anchor="start">12</text>
+<text x="30" y="294" font-size="12" fill="#18181b" text-anchor="start">Lei nº 13.756 de 12/12/2018</text>
+<text x="400" y="294" font-size="11" fill="#6e6e76" text-anchor="start">2018</text>
+<rect x="450" y="280" width="350" height="23" rx="3" fill="#107a57"/>
+<text x="810" y="296" font-size="12" fill="#18181b" font-weight="bold" text-anchor="start">10</text>
+<text x="30" y="328" font-size="12" fill="#18181b" text-anchor="start">Lei nº 14.515 de 29/12/2022</text>
+<text x="400" y="328" font-size="11" fill="#6e6e76" text-anchor="start">2022</text>
+<rect x="450" y="314" width="315" height="23" rx="3" fill="#107a57"/>
+<text x="775" y="330" font-size="12" fill="#18181b" font-weight="bold" text-anchor="start">9</text>
+<text x="30" y="362" font-size="12" fill="#18181b" text-anchor="start">Lei nº 9.532 de 10/12/1997</text>
+<text x="400" y="362" font-size="11" fill="#6e6e76" text-anchor="start">1997</text>
+<rect x="450" y="348" width="280" height="23" rx="3" fill="#107a57"/>
+<text x="740" y="364" font-size="12" fill="#18181b" font-weight="bold" text-anchor="start">8</text>
+<text x="30" y="396" font-size="12" fill="#18181b" text-anchor="start">Lei nº 13.848 de 25/06/2019</text>
+<text x="400" y="396" font-size="11" fill="#6e6e76" text-anchor="start">2019</text>
+<rect x="450" y="382" width="280" height="23" rx="3" fill="#107a57"/>
+<text x="740" y="398" font-size="12" fill="#18181b" font-weight="bold" text-anchor="start">8</text>
+<text x="30" y="430" font-size="12" fill="#18181b" text-anchor="start">Lei nº 14.195 de 26/08/2021</text>
+<text x="400" y="430" font-size="11" fill="#6e6e76" text-anchor="start">2021</text>
+<rect x="450" y="416" width="280" height="23" rx="3" fill="#107a57"/>
+<text x="740" y="432" font-size="12" fill="#18181b" font-weight="bold" text-anchor="start">8</text>
+<text x="30" y="455" font-size="11.5" fill="#6e6e76" text-anchor="start">1.028 arestas :REVOGA no total. Fonte: acervo legis-md, esfera federal.</text>
 </svg>

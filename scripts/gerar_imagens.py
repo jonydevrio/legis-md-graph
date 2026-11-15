@@ -2,11 +2,10 @@
 """Gera as evidências visuais do projeto com Pillow (sem matplotlib).
 
 Saída em docs/:
-  modelo_grafo.png       esquema de labels, propriedades e relações
+  modelo_grafo.png     esquema de labels, propriedades e relações
   normas_por_decada.png  volume legislativo por década
   top_revogadoras.png    normas que mais revogaram outras
 """
-import math
 import os
 
 from neo4j import GraphDatabase
@@ -43,6 +42,23 @@ def caixa(d, x, y, larg, alt, titulo, linhas, cor, f_t, f_c):
     for ln in linhas:
         d.text((x + 14, yy), ln, font=f_c, fill=PRETO)
         yy += 20
+
+
+def seta(d, p1, p2, cor, rotulo, f):
+    d.line([p1, p2], fill=cor, width=3)
+    # ponta
+    x1, y1 = p1
+    x2, y2 = p2
+    import math
+    ang = math.atan2(y2 - y1, x2 - x1)
+    tam = 12
+    for s in (0.4, -0.4):
+        d.line([(x2, y2), (x2 - tam * math.cos(ang - s), y2 - tam * math.sin(ang - s))],
+               fill=cor, width=3)
+    mx, my = (x1 + x2) / 2, (y1 + y2) / 2
+    tb = d.textbbox((0, 0), rotulo, font=f)
+    d.rectangle([mx - (tb[2] - tb[0]) / 2 - 4, my - 20, mx + (tb[2] - tb[0]) / 2 + 4, my - 2], fill=FUNDO)
+    d.text((mx - (tb[2] - tb[0]) / 2, my - 18), rotulo, font=f, fill=cor)
 
 
 def modelo(imagem_path):
@@ -83,6 +99,8 @@ def modelo(imagem_path):
         'A carga é idempotente: MERGE por id',
     ], CINZA, f_t, f_c)
 
+    # relações à volta do nó central
+    
     alvos = [
         (60, 520, 'REVOGA', VERM, 'revogou'),
         (330, 520, 'ALTERA', ROXO, 'deu nova redação'),
@@ -90,9 +108,9 @@ def modelo(imagem_path):
         (330, 570, 'REFERENCIA', AZUL, 'remissão "Vide"'),
     ]
     for x, y, nome, cor, desc in alvos:
-        d.rounded_rectangle([x, y - 16, x + 240, y + 8], 6, fill=cor)
+        d.rounded_rectangle([x, y - 16, x + 210, y + 8], 6, fill=cor)
         d.text((x + 10, y - 13), nome, font=f_r, fill=FUNDO)
-        d.text((x + 10, y + 14), desc, font=f_c, fill=CINZA)
+        d.text((x + 10, y + 12), desc, font=f_c, fill=CINZA)
 
     d.text((620, 340), 'Todas as relações carregam', font=f_c, fill=PRETO)
     d.text((620, 360), 'a propriedade trecho, com o texto', font=f_c, fill=PRETO)
@@ -103,7 +121,7 @@ def modelo(imagem_path):
     d.text((620, 500), 'Grafo carregado neste projeto:', font=f_t, fill=PRETO)
     d.text((620, 522), '16.321 nós :Norma', font=f_c, fill=PRETO)
     d.text((620, 542), '3.974 relações', font=f_c, fill=PRETO)
-    d.text((620, 562), 'fonte: acervo legis-md (esfera federal)', font=f_c, fill=CINZA)
+    d.text((620, 562), 'fonte: acervo legis-md (federal)', font=f_c, fill=CINZA)
 
     img.save(imagem_path)
     print('->', imagem_path)
@@ -128,8 +146,8 @@ def grafico_decadas(sessao, caminho):
     f_b = fonte(19, True)
     f = fonte(10)
     fv = fonte(9)
-    d.text((30, 20), 'Normas por década', font=f_b, fill=PRETO)
-    d.text((30, 46), 'Base: acervo federal — mostra a expansão legislativa do século XX',
+    d.text((30, 20), 'Normas vigentes por década', font=f_b, fill=PRETO)
+    d.text((30, 46), 'Base: acervo federal vigente — mostra a explosão legislativa do século XX',
            font=fonte(12), fill=CINZA)
     maximo = max(r['total'] for r in dados) if dados else 1
     base_y, alt = 370, 270
@@ -158,7 +176,7 @@ def grafico_revogadoras(sessao, caminho):
            font=fonte(12), fill=CINZA)
     maximo = max(r['total'] for r in dados) if dados else 1
     y = 80
-    for r in dados:
+    for i, r in enumerate(dados):
         largura = int(700 * r['total'] / maximo)
         d.rectangle([420, y, 420 + largura, y + 24], fill=VERDE)
         d.text((30, y + 4), r['titulo'][:52], font=fonte(12), fill=PRETO)
@@ -171,10 +189,7 @@ def grafico_revogadoras(sessao, caminho):
 def main():
     os.makedirs(DOCS, exist_ok=True)
     modelo(os.path.join(DOCS, 'modelo_grafo.png'))
-    uri = os.environ.get('NEO4J_URI', 'bolt://localhost:7687')
-    user = os.environ.get('NEO4J_USER', 'neo4j')
-    pwd = os.environ.get('NEO4J_PASSWORD', 'legis-graph')
-    d = GraphDatabase.driver(uri, auth=(user, pwd))
+    d = GraphDatabase.driver('bolt://localhost:7687', auth=('neo4j', 'legis-graph'))
     with d.session() as s:
         grafico_decadas(s, os.path.join(DOCS, 'normas_por_decada.png'))
         grafico_revogadoras(s, os.path.join(DOCS, 'top_revogadoras.png'))
