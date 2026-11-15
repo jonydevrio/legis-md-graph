@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# CSVs completos são gerados por scripts/extract.py a partir do acervo legis-md
+import/normas.csv
+import/correlacoes.csv
+
+# Exportações grandes: gere com os comandos do README
+export/*.dump
