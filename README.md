@@ -1,14 +1,21 @@
 # Grafo da Legislação Brasileira — Neo4j
 
-Modelagem do ordenamento jurídico brasileiro como grafo de propriedades, a partir do
-acervo público [legis-md](https://github.com/jonydevrio/legis-md) (legislação em Markdown,
-derivada de fontes oficiais como Planalto e normas.leg.br).
+[![Neo4j](https://img.shields.io/badge/Neo4j-5.26-008CC1?logo=neo4j&logoColor=white)](https://neo4j.com)
+[![Cypher](https://img.shields.io/badge/Query-Cypher-4B8BBE)](https://neo4j.com/docs/cypher-manual/)
+[![Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-green)](LICENSE)
 
-O objetivo é responder perguntas que uma tabela responde mal: **quais normas alteraram o
-Código Civil**, **que lei revogou qual**, **quais normas estão no centro do ordenamento** e
-**quais cadeias de revogação existem**.
+Modelagem do ordenamento jurídico brasileiro como grafo de propriedades, a partir do acervo
+público [legis-md](https://github.com/jonydevrio/legis-md) — legislação em Markdown derivada
+de fontes oficiais (Planalto, normas.leg.br, assembleias estaduais).
 
-![Modelo do grafo](docs/modelo_grafo.png)
+**16.321 normas** federais conectadas por **3.974 relações** de revogação, alteração,
+inclusão e remissão, extraídas do próprio texto das leis.
+
+O objetivo é responder perguntas que uma tabela responde mal: *quais normas alteraram o
+Código Civil*, *que lei revogou qual*, *quais normas estão no centro do ordenamento* e
+*quais cadeias de revogação existem*.
+
+![Modelo do grafo](docs/modelo_grafo.svg)
 
 ---
 
@@ -39,7 +46,12 @@ outras normas. O próprio texto traz essas relações anotadas — `*(Revogado p
 
 A pergunta que melhor justifica o grafo é a **cadeia de revogação**: `Lei A revogou Lei B,
 que já havia revogado Lei C`. Num modelo relacional isso exige uma CTE recursiva; no grafo
-é `(a)-[:REVOGA*2..3]->(c)`.
+é uma linha:
+
+```cypher
+MATCH caminho = (a:Norma)-[:REVOGA*2..3]->(c:Norma)
+RETURN a.titulo, c.titulo, length(caminho)
+```
 
 ---
 
@@ -80,6 +92,16 @@ Toda aresta carrega a propriedade **`trecho`**: o texto original que a originou.
 permite auditar qualquer relação contra a fonte e é o que separa um grafo confiável de uma
 caixa-preta.
 
+Distribuição real das arestas no grafo carregado:
+
+| Relação | Arestas |
+| --- | ---: |
+| `ALTERA` | 2.699 |
+| `REVOGA` | 1.028 |
+| `REFERENCIA` | 242 |
+| `INCLUI` | 5 |
+| **Total** | **3.974** |
+
 ### Constraints
 
 ```cypher
@@ -117,40 +139,50 @@ urn: "urn:lex:br:federal:lei:2002-01-10;10406"
 ---
 ```
 
-**Este projeto carrega a esfera federal:** 16.446 normas e 5.349 correlações extraídas do
-texto, resultando em 16.321 nós com chave única e 3.974 relações.
+**Este projeto carrega a esfera federal:** 16.446 normas lidas, 5.349 correlações extraídas
+do texto, resultando em **16.321 nós** com chave única e **3.974 relações** depois de
+descartar as que apontam para normas fora do escopo.
 
 ### Como rodar
 
 ```bash
+pip install -r requirements.txt
+
 # 1. Extrair os CSVs do acervo (precisa do repositório legis-md clonado)
 python3 scripts/extract.py /caminho/legis-md data
 
 # 2. Carregar no Neo4j (precisa de APOC)
 python3 scripts/load.py --uri bolt://localhost:7687 --user neo4j --pass SUA_SENHA
 
-# 3. Rodar as queries de negócio
+# 3. Rodar as 10 queries de negócio
 python3 scripts/run_query.py
 
-# 4. Gerar as imagens de evidência
+# 4. Gerar as evidências visuais
 python3 scripts/gerar_imagens.py
 ```
 
 Ou, pelo Neo4j Browser, com os CSVs em `<NEO4J_HOME>/import/`, seguindo
 [`cypher/load_csv.cypher`](cypher/load_csv.cypher) na ordem: constraints → nós → relações.
 
-### Quer o grafo pronto, sem rodar nada?
+### Abrir o grafo no seu Neo4j
 
-O grafo já carregado está em dois formatos, descritos em
-**[docs/IMPORTAR.md](docs/IMPORTAR.md)**:
+O guia completo está em **[docs/IMPORTAR.md](docs/IMPORTAR.md)**, com quatro caminhos:
 
-| Arquivo | Como usar |
+| Você tem | Caminho |
 | --- | --- |
-| `export/legis-graph.cypher` | funciona em **qualquer** versão do Neo4j |
-| `export/legis-graph-neo4j5.dump` | restauração nativa, exige Neo4j 5.x |
+| Neo4j de qualquer versão | A — arquivo `.cypher` |
+| Neo4j 5.x | B — dump binário |
+| Nada instalado | C — Neo4j Aura Free |
+| O acervo e quer gerar do zero | D — `LOAD CSV` |
 
-Se os arquivos não estiverem no repositório (são grandes), gere-os você mesmo com os
-comandos de [`docs/IMPORTAR.md`](docs/IMPORTAR.md#gerar-os-arquivos-de-exportação).
+Os arquivos de export (`.cypher` e `.dump`, ~23 MB) **não são versionados**: gere-os com
+
+```bash
+python3 scripts/exportar.py --pass SUA_SENHA
+```
+
+O dump binário exige o Neo4j parado; o script imprime os comandos exatos e o guia explica
+o detalhe do nome do arquivo, que é a causa mais comum de falha na restauração.
 
 ---
 
@@ -170,7 +202,7 @@ Os números abaixo são a execução real sobre as 16.446 normas federais.
 
 ### Q2. Quais normas mais revogaram outras?
 
-![Top revogadoras](docs/top_revogadoras.png)
+![Top revogadoras](docs/top_revogadoras.svg)
 
 | Norma | Revogações |
 | --- | ---: |
@@ -210,7 +242,7 @@ responderia com CTE recursiva e que no grafo cabe uma linha.
 
 ### Q6. Em que período o Brasil mais legislou?
 
-![Normas por década](docs/normas_por_decada.png)
+![Normas por década](docs/normas_por_decada.svg)
 
 ### Q7. Quais normas alteraram o Código Civil?
 
@@ -255,8 +287,8 @@ Resultado: 957 MB em vez de 4,2 GB, com as 17.200 normas federais necessárias.
 
 ### 5.2 O ambiente é Alpine (musl), e o JDK padrão não roda
 
-Baixei o Temurin 17 e recebi `Unable to load jimage library: libjimage.so`. O
-`ldd` mostrou a causa: o binário é glibc, e o sistema usa `/lib/ld-musl-aarch64.so.1`.
+Baixei o Temurin 17 e recebi `Unable to load jimage library: libjimage.so`. O `ldd` mostrou
+a causa: o binário é glibc, e o sistema usa `/lib/ld-musl-aarch64.so.1`.
 
 **Solução:** usar uma build musl do Liberica JDK 21 (BellSoft), que é a versão que o Neo4j
 5.x exige:
@@ -339,30 +371,40 @@ anterior ao escopo coletado ou pertence a outra esfera. Elas são **descartadas 
 contagem explícita** no log, não silenciosamente — e a query de carga usa `MATCH`, nunca
 `MERGE` cego, para não criar nós fantasmas com apenas um número.
 
+### 5.8 APOC grava no `import/`, não no caminho pedido
+
+`apoc.export.cypher.all('/caminho/absoluto/arquivo.cypher')` falhou com
+`FileNotFoundException` apontando para `.../import/home/...`.
+
+**Solução:** o caminho é sempre relativo a `<NEO4J_HOME>/import/`. O `scripts/exportar.py`
+já exporta com caminho relativo e move o resultado para `export/`.
+
 ---
 
 ## 6. Estrutura do repositório
 
 ```
+README.md                  este documento
 cypher/
   modelo_grafo.cypher      schema comentado + exemplo mínimo (abre no Arrows.app)
   load_csv.cypher          carga via LOAD CSV, em ordem, com alternativa sem APOC
   queries_negocio.cypher   10 queries comentadas, uma por pergunta de negócio
-data/                      CSVs gerados por extract.py (não versionados)
 docs/
-  modelo_grafo.png         diagrama do schema
-  normas_por_decada.png    volume legislativo por década
-  top_revogadoras.png      normas que mais revogaram
-  IMPORTAR.md              como abrir o grafo no seu Neo4j (3 caminhos)
-export/                    grafo pronto (gerado pelos comandos de docs/IMPORTAR.md)
+  modelo_grafo.svg         diagrama do schema (labels, propriedades, relações)
+  normas_por_decada.svg    volume legislativo por década
+  top_revogadoras.svg      normas que mais revogaram
+  IMPORTAR.md              como abrir o grafo no seu Neo4j (4 caminhos)
 import/
   amostra_normas.csv       amostra versionada de 10 normas
-  amostra_correlacoes.csv  amostra versionada de 40 correlações
+  amostra_correlacoes.csv  amostra versionada de correlações com trecho
+data/                      CSVs gerados por extract.py (não versionados)
+export/                    grafo pronto gerado por exportar.py (não versionado)
 scripts/
   extract.py               extrai nós e arestas do acervo Markdown
   load.py                  carrega no Neo4j via driver Python
-  run_query.py             roda as queries e imprime as tabelas
-  gerar_imagens.py         gera as evidências visuais
+  run_query.py             roda as 10 queries e imprime as tabelas
+  gerar_imagens.py         gera as evidências visuais (Pillow)
+  exportar.py              gera o .cypher e as instruções do dump
 ```
 
 ---
@@ -392,6 +434,9 @@ Este grafo herda essa limitação e acrescenta as suas: a extração de correla�
 heurística, baseada nos marcadores que o Planalto insere no texto, e não substitui a análise
 da norma. A propriedade `trecho` existe exatamente para que cada aresta possa ser conferida
 na fonte.
+
+Projeto desenvolvido como desafio prático da [DIO](https://www.dio.me) sobre bancos de
+dados em grafos com Neo4j.
 
 ## Licença
 
