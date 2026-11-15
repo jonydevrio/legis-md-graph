@@ -175,14 +175,26 @@ O guia completo está em **[docs/IMPORTAR.md](docs/IMPORTAR.md)**, com quatro ca
 | Nada instalado | C — Neo4j Aura Free |
 | O acervo e quer gerar do zero | D — `LOAD CSV` |
 
-Os arquivos de export (`.cypher` e `.dump`, ~23 MB) **não são versionados**: gere-os com
+O grafo já carregado está pronto para uso, sem precisar rodar nada:
+
+| Arquivo | Tamanho | Como usar |
+| --- | ---: | --- |
+| [`export/legis-graph.cypher`](export/legis-graph.cypher) | 11 MB | funciona em **qualquer** versão do Neo4j |
+| [`export/legis-graph-neo4j5.dump`](export/legis-graph-neo4j5.dump) | 13 MB | restauração nativa, exige Neo4j 5.x |
+
+Para importar, siga o caminho A ou B de [`docs/IMPORTAR.md`](docs/IMPORTAR.md). O mais
+rápido, com o Neo4j já rodando:
 
 ```bash
-python3 scripts/exportar.py --pass SUA_SENHA
+cypher-shell -a bolt://localhost:7687 -u neo4j -p SUA_SENHA -f export/legis-graph.cypher
 ```
 
-O dump binário exige o Neo4j parado; o script imprime os comandos exatos e o guia explica
-o detalhe do nome do arquivo, que é a causa mais comum de falha na restauração.
+Conferência esperada: `16.321` nós e `3.974` relações.
+
+Se quiser **regenerar** os arquivos a partir do seu próprio banco, use
+`python3 scripts/exportar.py --pass SUA_SENHA`. O dump binário exige o Neo4j parado; o
+script imprime os comandos exatos e o guia explica o detalhe do nome do arquivo, que é a
+causa mais comum de falha na restauração.
 
 ---
 
@@ -398,7 +410,9 @@ import/
   amostra_normas.csv       amostra versionada de 10 normas
   amostra_correlacoes.csv  amostra versionada de correlações com trecho
 data/                      CSVs gerados por extract.py (não versionados)
-export/                    grafo pronto gerado por exportar.py (não versionado)
+export/
+  legis-graph.cypher       grafo completo — importa em qualquer versão do Neo4j
+  legis-graph-neo4j5.dump  dump binário nativo (Neo4j 5.x)
 scripts/
   extract.py               extrai nós e arestas do acervo Markdown
   load.py                  carrega no Neo4j via driver Python

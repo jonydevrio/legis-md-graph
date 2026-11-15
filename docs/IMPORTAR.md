@@ -14,10 +14,26 @@ você não sabe a versão do seu servidor.
 
 ---
 
-## Antes de tudo: gerar os arquivos de exportação
+## Os arquivos já estão no repositório
 
-O repositório **não versiona** os arquivos de export porque eles somam ~23 MB. Gere-os
-localmente, com o grafo já carregado (veja o Caminho D ou o README):
+Não é preciso gerar nada. A pasta [`export/`](../export/) traz o grafo carregado:
+
+| Arquivo | Tamanho | Use no |
+| --- | ---: | --- |
+| `export/legis-graph.cypher` | 11 MB | Caminho A (qualquer versão) |
+| `export/legis-graph-neo4j5.dump` | 13 MB | Caminho B (Neo4j 5.x) |
+
+Os arquivos são versionados normalmente (não usam Git LFS) e ficam bem abaixo do limite
+de 100 MB por arquivo do GitHub. Para conferir que chegaram no seu clone:
+
+```bash
+git clone https://github.com/jonydevrio/legis-md-graph.git
+ls -lh legis-md-graph/export/
+```
+
+## Regenerar do zero (opcional)
+
+Só é necessário se você alterou os dados. Com o grafo já carregado:
 
 ```bash
 python3 scripts/exportar.py --pass SUA_SENHA
