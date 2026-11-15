@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="700" viewBox="0 0 1100 700" font-family="DejaVu Sans, Arial, sans-serif">
+<rect width="1100" height="700" fill="#ffffff"/>
+<text x="30" y="44" font-size="21" font-weight="bold" fill="#18181b">Modelo do grafo — Legislação Brasileira</text>
+<text x="30" y="68" font-size="13" fill="#6e6e76">Label único :Norma + propriedade tipo; relações nomeadas pelo efeito jurídico</text>
+<rect x="40" y="95" width="400" height="300" rx="10" fill="#fff" stroke="#2563eb" stroke-width="3"/>
+<rect x="40" y="95" width="400" height="34" rx="10" fill="#2563eb"/>
+<rect x="40" y="119" width="400" height="10" fill="#2563eb"/>
+<text x="52" y="118" font-size="14" font-weight="bold" fill="#ffffff">:Norma</text>
+<text x="54" y="154" font-size="12.5" fill="#18181b">id            "federal:BR:L:10406/2002"</text>
+<text x="54" y="173" font-size="12.5" fill="#18181b">titulo        "Lei nº 10.406 de 10/01/2002"</text>
+<text x="54" y="192" font-size="12.5" fill="#18181b">tipo          "Lei Ordinária"</text>
+<text x="54" y="211" font-size="12.5" fill="#18181b">numero        "10406"   ano  2002 (int)</text>
+<text x="54" y="230" font-size="12.5" fill="#18181b">esfera        "federal"</text>
+<text x="54" y="249" font-size="12.5" fill="#18181b">uf            null  (só estadual/municipal)</text>
+<text x="54" y="268" font-size="12.5" fill="#18181b">ementa        "Institui o Código Civil."</text>
+<text x="54" y="287" font-size="12.5" fill="#18181b">situacao      "Não consta revogação..."</text>
+<text x="54" y="306" font-size="12.5" fill="#18181b">vigente       true</text>
+<text x="54" y="325" font-size="12.5" fill="#18181b">vigencia_origem  como se chegou à conclusão</text>
+<text x="54" y="344" font-size="12.5" fill="#18181b">versao_texto  "compilada (vigente)"</text>
+<text x="54" y="363" font-size="12.5" fill="#18181b">urn / fonte / arquivo</text>
+<rect x="730" y="95" width="330" height="200" rx="10" fill="#fff" stroke="#6e6e76" stroke-width="3"/>
+<rect x="730" y="95" width="330" height="34" rx="10" fill="#6e6e76"/>
+<rect x="730" y="119" width="330" height="10" fill="#6e6e76"/>
+<text x="742" y="118" font-size="14" font-weight="bold" fill="#ffffff">Constraint e índices</text>
+<text x="744" y="154" font-size="12.5" fill="#18181b">UNIQUE  (:Norma).id</text>
+<text x="744" y="173" font-size="12.5" fill="#18181b">INDEX   :Norma(tipo)</text>
+<text x="744" y="192" font-size="12.5" fill="#18181b">INDEX   :Norma(ano)</text>
+<text x="744" y="211" font-size="12.5" fill="#18181b">INDEX   :Norma(esfera)</text>
+<text x="744" y="230" font-size="12.5" fill="#18181b">INDEX   :Norma(numero)</text>
+<text x="744" y="258" font-size="12.5" fill="#18181b">Carga idempotente: MERGE por id</text>
+<rect x="60" y="430" width="150" height="30" rx="6" fill="#b91c1c"/>
+<text x="72" y="450" font-size="12.5" font-weight="bold" fill="#ffffff">REVOGA</text>
+<text x="224" y="450" font-size="12" fill="#18181b">a origem revogou a destino</text>
+<rect x="60" y="472" width="150" height="30" rx="6" fill="#6d28d9"/>
+<text x="72" y="492" font-size="12.5" font-weight="bold" fill="#ffffff">ALTERA</text>
+<text x="224" y="492" font-size="12" fill="#18181b">deu nova redação ao dispositivo</text>
+<rect x="60" y="514" width="150" height="30" rx="6" fill="#107a57"/>
+<text x="72" y="534" font-size="12.5" font-weight="bold" fill="#ffffff">INCLUI</text>
+<text x="224" y="534" font-size="12" fill="#18181b">incluiu dispositivo</text>
+<rect x="60" y="556" width="150" height="30" rx="6" fill="#2563eb"/>
+<text x="72" y="576" font-size="12.5" font-weight="bold" fill="#ffffff">REFERENCIA</text>
+<text x="224" y="576" font-size="12" fill="#18181b">remissão sem efeito modificativo ("Vide")</text>
+<text x="60" y="616" font-size="12.5" fill="#2563eb">Direção: sempre de quem produz o efeito para quem o recebe. O grau de entrada mede quantas normas afetaram o nó.</text>
+<text x="60" y="638" font-size="12.5" fill="#2563eb">Toda aresta carrega a propriedade trecho — o texto original que a originou, para auditoria.</text>
+<text x="60" y="672" font-size="13" font-weight="bold" fill="#18181b">Grafo deste projeto:  16.321 nós :Norma   ·   3.974 relações  (REVOGA 1.028 · ALTERA 2.699 · INCLUI 5 · REFERENCIA 242)</text>
+</svg>

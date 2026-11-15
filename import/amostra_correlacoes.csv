@@ -1,0 +1,13 @@
+origem_id,tipo_relacao,destino_tipo,destino_numero,destino_ano,trecho
+federal:BR:L:8212/1991,REVOGA,Lei,3807,1960,"*(Revogado pela Lei nº 3.807, de 26/08/1960)*"
+federal:BR:L:9503/1997,REVOGA,Lei,5108,1966,"*(Revogado pela Lei nº 5.108, de 21/09/1966)*"
+federal:BR:L:10406/2002,REVOGA,Lei,3071,1916,"*(Revogado pela Lei nº 3.071, de 1º/01/1916)*"
+federal:BR:L:10406/2002,REVOGA,Lei,556,1850,"*(Revogado pela Lei nº 556, de 25/06/1850)*"
+federal:BR:L:6404/1976,REVOGA,Lei,2627,1940,"*(Revogado pela Lei nº 2.627, de 26/09/1940)*"
+federal:BR:L:13874/2019,ALTERA,Lei,10406,2002,"*(Redação dada pela Lei nº 13.874, de 2019)*"
+federal:BR:L:13146/2015,ALTERA,Lei,10406,2002,"*(Redação dada pela Lei nº 13.146, de 2015)*"
+federal:BR:LC:214/2025,REFERENCIA,Lei,5172,1966,"*(Vide Lei nº 5.172, de 25/10/1966)*"
+federal:BR:EC:32/2001,REFERENCIA,Lei,9868,1999,"*(Vide Lei nº 9.868, de 1999)*"
+federal:BR:L:14133/2021,REVOGA,Lei,8666,1993,"*(Revogado pela Lei nº 14.133, de 2021)*"
+federal:BR:L:14133/2021,REVOGA,Lei,10520,2002,"*(Revogado pela Lei nº 14.133, de 2021)*"
+federal:BR:L:8213/1991,ALTERA,Lei,8212,1991,"*(Redação dada pela Lei nº 8.213, de 1991)*"

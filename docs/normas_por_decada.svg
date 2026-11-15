@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="470" viewBox="0 0 1100 470" font-family="DejaVu Sans, Arial, sans-serif">
+<rect width="1100" height="470" fill="#ffffff"/>
+<text x="30" y="44" font-size="21" font-weight="bold" fill="#18181b">Normas por década</text>
+<text x="30" y="68" font-size="13" fill="#6e6e76">Base: acervo federal — a expansão legislativa do século XX</text>
+<line x1="40" y1="400" x2="1070" y2="400" stroke="#6e6e76" stroke-width="2"/>
+<rect x="45" y="393" width="16" height="7" fill="#2563eb"/>
+<text x="53" y="386" font-size="9.5" fill="#18181b" text-anchor="middle">36</text>
+<text x="53" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">20s</text>
+<rect x="66" y="368" width="16" height="32" fill="#2563eb"/>
+<text x="74" y="362" font-size="9.5" fill="#18181b" text-anchor="middle">101</text>
+<text x="74" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">30s</text>
+<rect x="87" y="392" width="16" height="8" fill="#2563eb"/>
+<text x="95" y="386" font-size="9.5" fill="#18181b" text-anchor="middle">25</text>
+<text x="95" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">40s</text>
+<rect x="108" y="382" width="16" height="18" fill="#2563eb"/>
+<text x="116" y="376" font-size="9.5" fill="#18181b" text-anchor="middle">56</text>
+<text x="116" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">50s</text>
+<rect x="129" y="385" width="16" height="15" fill="#2563eb"/>
+<text x="137" y="379" font-size="9.5" fill="#18181b" text-anchor="middle">46</text>
+<text x="137" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">60s</text>
+<rect x="150" y="381" width="16" height="19" fill="#2563eb"/>
+<text x="158" y="375" font-size="9.5" fill="#18181b" text-anchor="middle">59</text>
+<text x="158" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">70s</text>
+<rect x="171" y="373" width="16" height="27" fill="#2563eb"/>
+<text x="179" y="367" font-size="9.5" fill="#18181b" text-anchor="middle">83</text>
+<text x="179" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">80s</text>
+<rect x="192" y="372" width="16" height="28" fill="#2563eb"/>
+<text x="200" y="366" font-size="9.5" fill="#18181b" text-anchor="middle">84</text>
+<text x="200" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">90s</text>
+<rect x="213" y="382" width="16" height="18" fill="#2563eb"/>
+<text x="221" y="376" font-size="9.5" fill="#18181b" text-anchor="middle">55</text>
+<text x="221" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">00s</text>
+<rect x="234" y="390" width="16" height="10" fill="#2563eb"/>
+<text x="242" y="384" font-size="9.5" fill="#18181b" text-anchor="middle">31</text>
+<text x="242" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">10s</text>
+<rect x="255" y="392" width="16" height="8" fill="#2563eb"/>
+<text x="263" y="386" font-size="9.5" fill="#18181b" text-anchor="middle">24</text>
+<text x="263" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">20s</text>
+<rect x="276" y="235" width="16" height="165" fill="#6d28d9"/>
+<text x="284" y="229" font-size="9.5" fill="#18181b" text-anchor="middle">518</text>
+<text x="284" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">30s</text>
+<rect x="297" y="214" width="16" height="186" fill="#6d28d9"/>
+<text x="305" y="208" font-size="9.5" fill="#18181b" text-anchor="middle">586</text>
+<text x="305" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">40s</text>
+<rect x="318" y="110" width="16" height="290" fill="#6d28d9"/>
+<text x="326" y="104" font-size="9.5" fill="#18181b" text-anchor="middle">913</text>
+<text x="326" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">50s</text>
+<rect x="339" y="128" width="16" height="272" fill="#6d28d9"/>
+<text x="347" y="122" font-size="9.5" fill="#18181b" text-anchor="middle">856</text>
+<text x="347" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">60s</text>
+<rect x="360" y="161" width="16" height="239" fill="#6d28d9"/>
+<text x="368" y="155" font-size="9.5" fill="#18181b" text-anchor="middle">752</text>
+<text x="368" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">70s</text>
+<rect x="381" y="175" width="16" height="225" fill="#6d28d9"/>
+<text x="389" y="169" font-size="9.5" fill="#18181b" text-anchor="middle">707</text>
+<text x="389" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">80s</text>
+<rect x="402" y="142" width="16" height="258" fill="#6d28d9"/>
+<text x="410" y="136" font-size="9.5" fill="#18181b" text-anchor="middle">812</text>
+<text x="410" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">90s</text>
+<rect x="423" y="36" width="16" height="364" fill="#107a57"/>
+<text x="431" y="30" font-size="9.5" fill="#18181b" text-anchor="middle">1146</text>
+<text x="431" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">00s</text>
+<rect x="444" y="61" width="16" height="339" fill="#107a57"/>
+<text x="452" y="55" font-size="9.5" fill="#18181b" text-anchor="middle">1068</text>
+<text x="452" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">10s</text>
+<rect x="465" y="221" width="16" height="179" fill="#107a57"/>
+<text x="473" y="215" font-size="9.5" fill="#18181b" text-anchor="middle">563</text>
+<text x="473" y="416" font-size="9.5" fill="#6e6e76" text-anchor="middle">20s</text>
+<text x="520" y="450" font-size="11.5" fill="#6e6e76">Decadas de 1820 a 2020. A partir de 1930 a producao legislativa federal se multiplica.</text>
+</svg>
