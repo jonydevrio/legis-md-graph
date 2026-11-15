@@ -425,10 +425,11 @@ scripts/
 
 ## 8. Fonte e limites
 
-Dados de [jonydevrio/legis-md](https://github.com/jonydevrio/legis-md), conversões
-automáticas de fontes oficiais (Planalto, normas.leg.br, assembleias estaduais). O próprio
-acervo adverte: *"os textos têm caráter informativo e não substituem a publicação no Diário
-Oficial"*.
+Dados de [jonydevrio/legis-md](https://github.com/jonydevrio/legis-md), fork do repositório
+original, criado por C3B, localizado em [ctresb/leis](https://github.com/ctresb/leis), 
+conversões automáticas de fontes oficiais (Planalto, normas.leg.br, assembleias estaduais).
+O próprio acervo adverte: *"os textos têm caráter informativo e não substituem a publicação
+no Diário Oficial"*.
 
 Este grafo herda essa limitação e acrescenta as suas: a extração de correlações é
 heurística, baseada nos marcadores que o Planalto insere no texto, e não substitui a análise
